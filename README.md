@@ -6,7 +6,7 @@ reading sessions feel more like paper.
 
 ## Features
 
-- Four uniform, pixel-sharp textures: Classic Matte, Fine Weave, Soft Paper and E-Ink. Each one
+- Four uniform, crisp textures that look the same on Retina and standard displays: Classic Matte, Fine Weave, Soft Paper and E-Ink. Each one
   also lowers contrast slightly and softens harsh highlights.
 - Intensity and tint sliders, right in the menu bar
 - Global hotkey **⌃⌥⌘P** to toggle the texture
@@ -38,8 +38,9 @@ events and joins all Spaces. macOS composites windows using plain alpha blending
 overlay can't multiply against other apps. Instead the grain is encoded in alpha: dark
 specks are translucent black and light specks are translucent white. A flat veil underneath
 lifts the blacks and dims the highlights. Each texture is a 512×512 seamless tile of
-*stationary* noise (no blotches or dust), generated at the display's physical pixel density
-so one grain lands on exactly one device pixel. Every texture is normalized to the same
+*stationary* noise (no blotches or dust), sized in points, so a grain covers 1 pixel on a standard display and an exact 2×2 block on
+Retina. It looks the same on a Retina laptop and on an external monitor, and stays crisp with
+no moiré. Every texture is normalized to the same
 strength, so the intensity slider feels the same whichever texture you pick.
 
 ## Limitations

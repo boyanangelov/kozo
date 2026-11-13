@@ -42,12 +42,23 @@ final class TextureView: NSView {
             tintColor.withAlphaComponent(tintAlpha).setFill()
             dirtyRect.fill()
         }
-        if grainAlpha > 0, let texture {
+        if grainAlpha > 0, let texture,
+           let cg = texture.cgImage(forProposedRect: nil, context: nil, hints: nil) {
+            // Tile by hand, aligned to the view origin with no interpolation, so each texture
+            // pixel lands on exactly one device pixel on both 1× and Retina displays.
             ctx.saveGState()
             ctx.setAlpha(grainAlpha)
-            NSGraphicsContext.current?.patternPhase = .zero
-            NSColor(patternImage: texture).setFill()
-            dirtyRect.fill(using: .sourceOver)
+            ctx.interpolationQuality = .none
+            let tw = texture.size.width, th = texture.size.height
+            var y = (dirtyRect.minY / th).rounded(.down) * th
+            while y < dirtyRect.maxY {
+                var x = (dirtyRect.minX / tw).rounded(.down) * tw
+                while x < dirtyRect.maxX {
+                    ctx.draw(cg, in: CGRect(x: x, y: y, width: tw, height: th))
+                    x += tw
+                }
+                y += th
+            }
             ctx.restoreGState()
         }
     }

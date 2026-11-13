@@ -3,8 +3,13 @@ import AppKit
 /// Procedurally generates seamless, tileable, *uniform* matte textures.
 ///
 /// The goal is an even screen-protector-like finish, not realistic dust: every texture is
-/// stationary noise with no low-frequency blotches, and it is generated at the display's
-/// physical pixel density, so one grain maps to one device pixel (crisp, with no moiré).
+/// stationary noise with no low-frequency blotches.
+///
+/// Grain is sized in *points*, not pixels. On a 2× Retina display each grain covers exactly
+/// 2×2 device pixels, and on a 1× display it covers 1 pixel. A point is roughly the same
+/// physical size on every Mac display, so the texture looks the same on a Retina laptop and a
+/// standard external monitor. Upscaling is nearest-neighbour by an integer factor, so grain
+/// stays crisp, with no blur or moiré.
 ///
 /// macOS composites separate windows with plain alpha blending, so the overlay cannot multiply
 /// against other apps. The grain is encoded in alpha: positive noise is translucent white and
@@ -12,7 +17,7 @@ import AppKit
 /// blacks and dims the highlights, which gives the matte, lower-contrast feel.
 enum TextureGenerator {
     private static var cache: [String: NSImage] = [:]
-    private static let size = 512    // pixels; a power of two, so every pattern period tiles
+    private static let size = 512    // points; a power of two, so every pattern period tiles
 
     static func image(for preset: TexturePreset, scale: CGFloat) -> NSImage {
         let key = "\(preset.rawValue)@\(scale)"
@@ -47,11 +52,11 @@ enum TextureGenerator {
         var field: [Float]
         switch preset {
         case .matte:
-            // Pure fine grain at 1 device pixel.
+            // Pure fine grain, one grain per point.
             field = whiteNoise()
 
         case .weave:
-            // Fine grain plus a faint woven crosshatch with an 8-pixel period.
+            // Fine grain plus a faint woven crosshatch with an 8-point period.
             field = whiteNoise()
             for y in 0..<n {
                 for x in 0..<n {
@@ -69,7 +74,7 @@ enum TextureGenerator {
             field = zip(soft, crisp).map { $0 * 2.2 + $1 * 0.5 }
 
         case .eink:
-            // E-paper particles: 2×2-pixel cells of noise, still completely even.
+            // E-paper particles: 2×2-point cells of noise, still completely even.
             let cells = whiteNoise()
             field = (0..<(n * n)).map { i in cells[((i / n) / 2 * 2) * n + (i % n) / 2 * 2] }
         }
@@ -77,25 +82,27 @@ enum TextureGenerator {
         normalize(&field, rms: 0.33)   // same perceived strength for every preset
 
         // Encode as premultiplied RGBA: positive → white, negative → black, |v| → alpha.
-        var pixels = [UInt8](repeating: 0, count: n * n * 4)
-        for i in 0..<(n * n) {
-            let v = max(-1, min(1, field[i]))
-            let a = UInt8(abs(v) * 255)
-            let c: UInt8 = v > 0 ? a : 0
-            pixels[i * 4 + 0] = c
-            pixels[i * 4 + 1] = c
-            pixels[i * 4 + 2] = c
-            pixels[i * 4 + 3] = a
+        // Each point-grid cell becomes an s×s block of device pixels.
+        let s = max(1, Int(scale.rounded()))
+        let px = n * s
+        var pixels = [UInt8](repeating: 0, count: px * px * 4)
+        for y in 0..<px {
+            for x in 0..<px {
+                let v = max(-1, min(1, field[(y / s) * n + x / s]))
+                let a = UInt8(abs(v) * 255)
+                let c: UInt8 = v > 0 ? a : 0
+                let o = (y * px + x) * 4
+                pixels[o] = c; pixels[o + 1] = c; pixels[o + 2] = c; pixels[o + 3] = a
+            }
         }
 
-        let cg = CGImage(width: n, height: n, bitsPerComponent: 8, bitsPerPixel: 32,
-                         bytesPerRow: n * 4, space: CGColorSpace(name: CGColorSpace.sRGB)!,
+        let cg = CGImage(width: px, height: px, bitsPerComponent: 8, bitsPerPixel: 32,
+                         bytesPerRow: px * 4, space: CGColorSpace(name: CGColorSpace.sRGB)!,
                          bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
                          provider: CGDataProvider(data: Data(pixels) as CFData)!,
                          decode: nil, shouldInterpolate: false, intent: .defaultIntent)!
-        // Point size = pixels / backing scale, so one texture pixel maps to one screen pixel.
-        let pt = CGFloat(n) / max(scale, 1)
-        return NSImage(cgImage: cg, size: NSSize(width: pt, height: pt))
+        // The image is n×n points backed by (n·s)² pixels, so it maps 1:1 onto device pixels.
+        return NSImage(cgImage: cg, size: NSSize(width: n, height: n))
     }
 
     /// 3×3 box blur with wrap-around, so the result still tiles seamlessly.
