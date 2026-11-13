@@ -26,10 +26,10 @@ final class OverlayWindow: NSWindow {
 /// Draws a translucent tint plus a tiled grain texture. It only redraws when settings change,
 /// so it costs essentially nothing while idle.
 final class TextureView: NSView {
-    var texture: NSImage? { didSet { needsDisplay = true } }
+    var texture: NSImage? { didSet { if texture !== oldValue { needsDisplay = true } } }
     var tintColor: NSColor = .clear { didSet { needsDisplay = true } }
-    var tintAlpha: CGFloat = 0 { didSet { needsDisplay = true } }
-    var grainAlpha: CGFloat = 0 { didSet { needsDisplay = true } }
+    var tintAlpha: CGFloat = 0 { didSet { if tintAlpha != oldValue { needsDisplay = true } } }
+    var grainAlpha: CGFloat = 0 { didSet { if grainAlpha != oldValue { needsDisplay = true } } }
 
     override var isFlipped: Bool { true }
     override func hitTest(_ point: NSPoint) -> NSView? { nil }

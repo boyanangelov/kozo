@@ -1,12 +1,13 @@
 # Screen Glosser
 
-A free, open-source macOS menu-bar app that lays a subtle **paper**, **matte glass** or
-**e-ink** texture over your whole screen. It takes the glossy edge off a display and makes long
+A free, open-source macOS menu-bar app that lays a subtle, even **matte**, **weave**,
+**paper** or **e-ink** grain over your whole screen. It takes the glossy edge off a display and makes long
 reading sessions feel more like paper.
 
 ## Features
 
-- Three procedurally generated textures: Paper, Matte Glass and E-Ink
+- Four uniform, pixel-sharp textures: Classic Matte, Fine Weave, Soft Paper and E-Ink. Each one
+  also lowers contrast slightly and softens harsh highlights.
 - Intensity and tint sliders, right in the menu bar
 - Global hotkey **⌃⌥⌘P** to toggle the texture
 - Works on every display, in every Space and over full-screen apps, with a per-display on/off switch
@@ -35,10 +36,11 @@ A `Package.swift` is also included for working with the project in Xcode or with
 Each display gets a borderless, transparent window at screen-saver level that ignores mouse
 events and joins all Spaces. macOS composites windows using plain alpha blending, so the
 overlay can't multiply against other apps. Instead the grain is encoded in alpha: dark
-specks are translucent black and light specks are translucent white. A faint colour wash is
-drawn underneath them. The texture is a 512×512 seamless tile generated at launch: fine
-noise, two octaves of wrap-around value noise for mottling, and, for Paper, curved fibre
-strokes.
+specks are translucent black and light specks are translucent white. A flat veil underneath
+lifts the blacks and dims the highlights. Each texture is a 512×512 seamless tile of
+*stationary* noise (no blotches or dust), generated at the display's physical pixel density
+so one grain lands on exactly one device pixel. Every texture is normalized to the same
+strength, so the intensity slider feels the same whichever texture you pick.
 
 ## Limitations
 

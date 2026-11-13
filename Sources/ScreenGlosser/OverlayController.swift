@@ -11,7 +11,6 @@ final class OverlayController {
     init(settings: Settings) {
         self.settings = settings
         settings.changed
-            .receive(on: RunLoop.main)
             .sink { [weak self] in self?.apply(animated: true) }
             .store(in: &cancellables)
         NotificationCenter.default.addObserver(
@@ -44,18 +43,20 @@ final class OverlayController {
 
     private func apply(animated: Bool) {
         let preset = settings.preset
-        let tint = TextureGenerator.tintColor(for: preset)
+        let veil = TextureGenerator.veilColor(for: preset)
 
         for (id, w) in windows {
             let screen = NSScreen.screens.first { $0.displayID == id }
             let scale = screen?.backingScaleFactor ?? 2
             let view = w.textureView
             view.texture = TextureGenerator.image(for: preset, scale: scale)
-            view.tintColor = tint
-            // Keep the tint subtle: full slider = 22% opacity colour wash.
-            view.tintAlpha = CGFloat(settings.tint) * 0.22
-            // Grain: full slider = 60% of the texture's own alpha.
-            view.grainAlpha = CGFloat(settings.intensity) * 0.6
+            view.tintColor = veil
+            // The veil softens contrast in step with the grain. The Tint slider adds the
+            // preset's colour on top (warm for Soft Paper, grey for E-Ink).
+            view.tintAlpha = CGFloat(settings.intensity) * 0.10 + CGFloat(settings.tint) * 0.15
+            view.grainAlpha = CGFloat(settings.intensity) * 0.55
+            // Redraw now. This also works while the status menu is tracking a slider drag.
+            view.displayIfNeeded()
 
             let visible = settings.enabled && !suppressed && !settings.disabledDisplays.contains(id)
             setVisible(w, visible, animated: animated)
@@ -64,6 +65,7 @@ final class OverlayController {
 
     private func setVisible(_ w: OverlayWindow, _ visible: Bool, animated: Bool) {
         if visible {
+            guard !w.isVisible || w.alphaValue < 1 else { return }   // already fully shown
             if !w.isVisible { w.alphaValue = animated ? 0 : 1; w.orderFrontRegardless() }
             fade(w, to: 1, animated: animated, completion: nil)
         } else if w.isVisible {

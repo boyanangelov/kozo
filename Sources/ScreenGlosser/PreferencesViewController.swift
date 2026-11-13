@@ -81,7 +81,6 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
         view = stack
 
         settings.changed
-            .receive(on: RunLoop.main)
             .sink { [weak self] in self?.refresh() }
             .store(in: &cancellables)
         refresh()

@@ -27,7 +27,6 @@ final class AppExclusion {
             self?.evaluate()
         }
         settings.changed
-            .receive(on: RunLoop.main)
             .sink { [weak self] in self?.evaluate() }
             .store(in: &cancellables)
         evaluate()

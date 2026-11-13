@@ -2,13 +2,14 @@ import AppKit
 import Combine
 
 enum TexturePreset: String, CaseIterable, Identifiable {
-    case paper, matte, eink
+    case matte, weave, paper, eink
 
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .paper: return "Paper"
-        case .matte: return "Matte Glass"
+        case .matte: return "Classic Matte"
+        case .weave: return "Fine Weave"
+        case .paper: return "Soft Paper"
         case .eink:  return "E-Ink"
         }
     }
@@ -26,7 +27,7 @@ final class Settings: ObservableObject {
     @Published var preset: TexturePreset { didSet { save("preset", preset.rawValue) } }
     /// 0...1 strength of the grain texture.
     @Published var intensity: Double { didSet { save("intensity", intensity) } }
-    /// 0...1 strength of the colour tint (warm for paper, grey for e-ink).
+    /// 0...1 strength of the preset's colour veil (warm for paper, grey for e-ink).
     @Published var tint: Double { didSet { save("tint", tint) } }
     @Published var excludedBundleIDs: [String] { didSet { save("excludedBundleIDs", excludedBundleIDs) } }
     /// Display IDs (CGDirectDisplayID) on which the overlay is turned off.
@@ -35,12 +36,12 @@ final class Settings: ObservableObject {
     private init() {
         d.register(defaults: [
             "enabled": true,
-            "preset": TexturePreset.paper.rawValue,
-            "intensity": 0.35,
-            "tint": 0.4,
+            "preset": TexturePreset.matte.rawValue,
+            "intensity": 0.4,
+            "tint": 0.0,
         ])
         enabled = d.bool(forKey: "enabled")
-        preset = TexturePreset(rawValue: d.string(forKey: "preset") ?? "") ?? .paper
+        preset = TexturePreset(rawValue: d.string(forKey: "preset") ?? "") ?? .matte
         intensity = d.double(forKey: "intensity")
         tint = d.double(forKey: "tint")
         excludedBundleIDs = d.stringArray(forKey: "excludedBundleIDs") ?? []

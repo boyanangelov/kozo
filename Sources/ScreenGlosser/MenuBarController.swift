@@ -18,7 +18,6 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         statusItem.menu = menu
         updateIcon()
         settings.changed
-            .receive(on: RunLoop.main)
             .sink { [weak self] in self?.updateIcon() }
             .store(in: &cancellables)
     }
