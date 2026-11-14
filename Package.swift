@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "ScreenGlosser",
+    name: "Kozo",
     platforms: [.macOS(.v13)],
     targets: [
         .executableTarget(
-            name: "ScreenGlosser",
-            path: "Sources/ScreenGlosser",
+            name: "Kozo",
+            path: "Sources/Kozo",
             linkerSettings: [.linkedFramework("Carbon")]
         )
     ]

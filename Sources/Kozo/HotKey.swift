@@ -23,10 +23,10 @@ final class HotKey {
         if modifiers.contains(.control) { carbonMods |= UInt32(controlKey) }
         if modifiers.contains(.shift)   { carbonMods |= UInt32(shiftKey) }
 
-        let hotKeyID = EventHotKeyID(signature: OSType(0x53474C53) /* 'SGLS' */, id: id)
+        let hotKeyID = EventHotKeyID(signature: OSType(0x4B4F5A4F) /* 'KOZO' */, id: id)
         let status = RegisterEventHotKey(keyCode, carbonMods, hotKeyID, GetApplicationEventTarget(), 0, &ref)
         guard status == noErr else {
-            NSLog("ScreenGlosser: failed to register hotkey (\(status))")
+            NSLog("Kozo: failed to register hotkey (\(status))")
             return nil
         }
         HotKey.handlers[id] = action

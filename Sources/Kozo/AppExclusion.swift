@@ -9,7 +9,7 @@ final class AppExclusion {
     private let onChange: (Bool) -> Void
     private var cancellables = Set<AnyCancellable>()
 
-    /// Most recent frontmost app other than Screen Glosser itself. Opening our menu doesn't
+    /// Most recent frontmost app other than Kozo itself. Opening our menu doesn't
     /// change it, so "Exclude current app" targets the app the user was actually using.
     private(set) var lastForegroundApp: NSRunningApplication?
 

@@ -24,7 +24,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
 
     private func updateIcon() {
         let name = settings.enabled ? "doc.text.fill" : "doc.text"
-        let img = NSImage(systemSymbolName: name, accessibilityDescription: "Screen Glosser")
+        let img = NSImage(systemSymbolName: name, accessibilityDescription: "Kozo")
         img?.isTemplate = true
         statusItem.button?.image = img
     }
@@ -74,7 +74,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         let prefs = item("Preferences…", #selector(openPreferences))
         prefs.keyEquivalent = ","
         menu.addItem(prefs)
-        let quit = item("Quit Screen Glosser", #selector(quit))
+        let quit = item("Quit Kozo", #selector(quit))
         quit.keyEquivalent = "q"
         menu.addItem(quit)
     }
@@ -110,7 +110,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     @objc private func openPreferences() {
         if prefsWindow == nil {
             let w = NSWindow(contentViewController: PreferencesViewController(settings: settings))
-            w.title = "Screen Glosser"
+            w.title = "Kozo"
             w.styleMask = [.titled, .closable]
             w.isReleasedWhenClosed = false
             w.center()

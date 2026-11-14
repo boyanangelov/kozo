@@ -1,4 +1,6 @@
-# Screen Glosser
+# Kozo
+
+*Kozo (楮) is the mulberry fibre used to make Japanese washi paper.*
 
 A free, open-source macOS menu-bar app that lays a subtle, even **matte**, **weave**,
 **paper** or **e-ink** grain over your whole screen. It takes the glossy edge off a display and makes long
@@ -23,9 +25,9 @@ reading sessions feel more like paper.
 You only need the Xcode **Command Line Tools** (`xcode-select --install`), not Xcode itself.
 
 ```sh
-./scripts/bundle.sh          # builds build/ScreenGlosser.app (universal, ad-hoc signed)
-open build/ScreenGlosser.app
-cp -R build/ScreenGlosser.app /Applications/   # optional; required for "Launch at login"
+./scripts/bundle.sh          # builds build/Kozo.app (universal, ad-hoc signed)
+open build/Kozo.app
+cp -R build/Kozo.app /Applications/   # optional; required for "Launch at login"
 ```
 
 A `Package.swift` is also included for working with the project in Xcode or with
