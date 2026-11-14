@@ -6,6 +6,20 @@ A free, open-source macOS menu-bar app that lays a subtle, even **matte**, **wea
 **paper** or **e-ink** grain over your whole screen. It takes the glossy edge off a display and makes long
 reading sessions feel more like paper.
 
+![Kozo before and after: off on the left, Classic Matte on the right](docs/demo.png)
+
+<details>
+<summary>All textures and the intensity slider (animated)</summary>
+
+![Kozo textures: Classic Matte, Fine Weave, Soft Paper and E-Ink](docs/presets.png)
+
+![Kozo cycling through its textures and intensity levels](docs/demo.gif)
+
+</details>
+
+The overlay is hidden from screenshots, so these images are rendered from the real texture
+code by `scripts/make-demo.sh`. On your screen the effect looks the same.
+
 ## Features
 
 - Four uniform, crisp textures that look the same on Retina and standard displays: Classic Matte, Fine Weave, Soft Paper and E-Ink. Each one
